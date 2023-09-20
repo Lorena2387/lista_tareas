@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:lista_tareas/app/view/components/h1.dart';
 import 'package:lista_tareas/app/view/components/shape.dart';
+import 'package:lista_tareas/app/view/home/inherited_widgets.dart';
 //import 'package:lista_tareas/app/view/components/shape.dart';
 import 'package:lista_tareas/app/view/task_list/task_list_view.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -30,6 +31,10 @@ class SplashView extends StatelessWidget {
           ),
           const H1(
             'Lista de tareas',
+          ),
+          Text(
+            'Inherited widget',
+            style: TextStyle(color: SpecialColor.of(context).color),
           ),
           const SizedBox(
             height: 21,
