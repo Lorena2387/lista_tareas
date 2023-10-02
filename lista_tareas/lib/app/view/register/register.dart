@@ -5,12 +5,18 @@ class StatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(50),
+        padding: EdgeInsets.all(50),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [],
+          children: [
+            _EmailTextField(),
+            SizedBox(
+              height: 20,
+            ),
+            _SendButton(),
+          ],
         ),
       ),
     );
@@ -22,6 +28,26 @@ class _EmailTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField();
+    return TextField(
+      onChanged: (value) {},
+      decoration: const InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(),
+        hintText: 'Email',
+      ),
+    );
+  }
+}
+
+class _SendButton extends StatelessWidget {
+  const _SendButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {},
+      child: const Text('Enviar'),
+    );
   }
 }
