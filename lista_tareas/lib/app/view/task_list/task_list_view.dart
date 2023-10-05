@@ -2,55 +2,32 @@
 
 import 'package:flutter/material.dart';
 import 'package:lista_tareas/app/models/task.dart';
-import 'package:lista_tareas/app/repository/task_repository.dart';
+//import 'package:lista_tareas/app/repository/task_repository.dart';
 import 'package:lista_tareas/app/view/components/h1.dart';
 import 'package:lista_tareas/app/view/components/shape.dart';
+import 'package:lista_tareas/app/view/task_list/task_provider.dart';
+import 'package:provider/provider.dart';
 
 class TaskListView extends StatefulWidget {
-  const TaskListView({super.key});
+  const TaskListView({Key? key}) : super(key: key);
 
-  @override
-  State<TaskListView> createState() => _TaskListViewState();
-}
-
-class _TaskListViewState extends State<TaskListView> {
-  final TaskRepository taskRepository = TaskRepository();
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Header(),
-          Expanded(
-              child: FutureBuilder<List<Task>>(
-                  future: taskRepository.getTasks(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Text('No hay tareas'),
-                      );
-                    }
-                    return _TaskList(
-                      snapshot.data!,
-                      onTaskDoneChange: (task) {
-                        task.done = !task.done;
-                        taskRepository.saveTasks(snapshot.data!);
-                        setState(() {});
-                      },
-                    );
-                  })),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showNewTaskModal(context),
-        child: const Icon(Icons.add),
+    return ChangeNotifierProvider(
+      create: (_) => TaskProvider()..fetchTask(),
+      child: Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            _Header(),
+            Expanded(
+              child: _TaskList(),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _showNewTaskModal(context),
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
@@ -60,12 +37,15 @@ class _TaskListViewState extends State<TaskListView> {
       context: context,
       isScrollControlled: true,
       builder: (_) => _NewTaskModal(
-        onTaskCreated: (Task task) {
-          taskRepository.addTask(task);
-          setState(() {});
-        },
+        onTaskCreated: (Task task) {},
       ),
     );
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
   }
 }
 
@@ -123,9 +103,7 @@ class _NewTaskModal extends StatelessWidget {
 }
 
 class _TaskList extends StatelessWidget {
-  const _TaskList(this.taskList, {super.key, required this.onTaskDoneChange});
-  final List<Task> taskList;
-  final void Function(Task task) onTaskDoneChange;
+  const _TaskList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -141,13 +119,21 @@ class _TaskList extends StatelessWidget {
             'Tareas',
           ),
           Expanded(
-            child: ListView.separated(
-              itemBuilder: (_, index) => _TaskItem(taskList[index],
-                  onTap: () => onTaskDoneChange(taskList[index])),
-              separatorBuilder: (_, __) => const SizedBox(
-                height: 16,
-              ),
-              itemCount: taskList.length,
+            child: Consumer<TaskProvider>(
+              builder: (_, provider, __) {
+                if (provider.taskList.isEmpty) {
+                  return Center(
+                    child: Text('No hay tareas'),
+                  );
+                }
+                return ListView.separated(
+                    itemBuilder: (_, index) =>
+                        _TaskItem(provider.taskList[index]),
+                    separatorBuilder: (_, __) => SizedBox(
+                          height: 16,
+                        ),
+                    itemCount: provider.taskList.length);
+              },
             ),
           ),
         ],
