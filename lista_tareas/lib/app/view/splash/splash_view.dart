@@ -33,7 +33,7 @@ class SplashView extends StatelessWidget {
               'Lista de tareas',
             ),
             Text(
-              'Inherited widget',
+              'Vamos a guardar tareas',
               style: TextStyle(color: SpecialColor.of(context).color),
             ),
             const SizedBox(
