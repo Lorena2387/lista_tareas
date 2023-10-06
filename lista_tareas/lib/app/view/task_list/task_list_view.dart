@@ -8,9 +8,9 @@ import 'package:lista_tareas/app/view/components/shape.dart';
 import 'package:lista_tareas/app/view/task_list/task_provider.dart';
 import 'package:provider/provider.dart';
 
-class TaskListView extends StatefulWidget {
+class TaskListView extends StatelessWidget {
   const TaskListView({Key? key}) : super(key: key);
-
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => TaskProvider()..fetchTask(),
@@ -40,12 +40,6 @@ class TaskListView extends StatefulWidget {
         onTaskCreated: (Task task) {},
       ),
     );
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
   }
 }
 
@@ -127,8 +121,11 @@ class _TaskList extends StatelessWidget {
                   );
                 }
                 return ListView.separated(
-                    itemBuilder: (_, index) =>
-                        _TaskItem(provider.taskList[index]),
+                    itemBuilder: (_, index) => _TaskItem(
+                          provider.taskList[index],
+                          onTap: () => provider
+                              .onTaskDoneChange(provider.taskList[index]),
+                        ),
                     separatorBuilder: (_, __) => SizedBox(
                           height: 16,
                         ),

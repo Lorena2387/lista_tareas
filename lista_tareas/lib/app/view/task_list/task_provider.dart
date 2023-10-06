@@ -13,4 +13,9 @@ class TaskProvider extends ChangeNotifier {
   }
 
   List<Task> get taskList => _taskList;
+
+  void onTaskDoneChange(Task task) {
+    task.done = !task.done;
+    _taskRepository.saveTasks(_taskList);
+  }
 }
