@@ -24,30 +24,33 @@ class TaskListView extends StatelessWidget {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _showNewTaskModal(context),
-          child: const Icon(Icons.add),
-        ),
+        floatingActionButton: Builder(builder: (context) {
+          return FloatingActionButton(
+            onPressed: () => _showNewTaskModal(context),
+            child: const Icon(Icons.add),
+          );
+        }),
       ),
     );
   }
 
   void _showNewTaskModal(BuildContext context) {
     showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => _NewTaskModal(
-        onTaskCreated: (Task task) {},
-      ),
-    );
+        context: context,
+        isScrollControlled: true,
+        builder: (_) => ChangeNotifierProvider.value(
+              value: context.read<TaskProvider>(),
+              child: _NewTaskModal(),
+            ));
   }
 }
 
 class _NewTaskModal extends StatelessWidget {
-  _NewTaskModal({super.key, required this.onTaskCreated});
+  _NewTaskModal({
+    super.key,
+  });
 
   final _controller = TextEditingController();
-  final void Function(Task task) onTaskCreated;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +85,7 @@ class _NewTaskModal extends StatelessWidget {
             onPressed: () {
               if (_controller.text.isNotEmpty) {
                 final task = Task(_controller.text);
-                onTaskCreated(task);
+                context.read<TaskProvider>().addNewTask(task);
                 Navigator.of(context).pop();
               }
             },
